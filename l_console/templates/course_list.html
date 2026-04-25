@@ -1,0 +1,994 @@
+{% extends 'base.html' %}
+{% block content %}
+<!-- Bootstrap 5.0 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+<body class="bg-light fs-5">
+<!-- Top Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom border-2 border-primary">
+    <div class="container-fluid px-4">
+        <span class="navbar-brand fw-bold text-primary">COURSES LIST</span>
+        <div class="collapse navbar-collapse justify-content-end">
+            <ul class="navbar-nav">
+                <li class="nav-item"><span class="nav-link fw-bold text-primary ">DASHBOARD</span></li>
+                <li class="nav-item"><span class="nav-link text-dark">COURSES</span></li>
+                <li class="nav-item"><span class="nav-link text-dark">ENROLLMENTS</span></li>
+                <li class="nav-item"><span class="nav-link text-dark">STUDENTS</span></li>
+                <li class="nav-item"><span class="nav-link text-dark">REPORTS</span></li>
+                <li class="nav-item"><span class="nav-link text-dark">ADMIN</span></li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Container -->
+<div class="container-fluid bg-light">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 p-0 border-end border-primary bg-white">
+            <div class="list-group list-group-flush">
+                <div class="list-group-item bg-light fw-bold">Main Menu</div>
+                <div class="list-group-item text-primary fw-bold bg-light">Dashboard</div>
+                <div class="list-group-item text-dark">Courses</div>
+                <div class="list-group-item text-dark">Enrollments</div>
+                <div class="list-group-item text-dark">Students</div>
+                <div class="list-group-item text-dark">Reports</div>
+                <div class="list-group-item text-dark">Settings</div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="col-md-10 p-4 bg-light">
+            <h2 class="border-bottom border-primary pb-2 mb-4 text-primary">COURSES LIST</h2>
+
+            <!-- Search Section with ADD button -->
+            <div class="d-flex gap-2 mb-4">
+                <form class="d-flex" role="search" method="get" action="{% url 'search' %}" style="width:85%;">
+        <input class="form-control me-2" name="query" type="search" placeholder="Search" aria-label="Search"/>
+        <button class="btn btn-outline-success btn-primary text-white" type="submit">Search</button>
+      </form>
+                <button class="btn btn-primary h-25" data-bs-toggle="modal" data-bs-target="#addModal">
+                     ADD COURSE
+                </button>
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive bg-white rounded shadow-sm">
+                <table class="table table-bordered table-hover mb-0">
+                    <thead class="bg-primary text-white">
+                        <tr>
+                            <th class="bg-primary text-white">COURSE CODE</th>
+                            <th class="bg-primary text-white">TITLE</th>
+                            <th class="bg-primary text-white">CATEGORY</th>
+                            <th class="bg-primary text-white">TYPE</th>
+                            <th class="bg-primary text-white">LEVEL</th>
+                            <th class="bg-primary text-white">DURATION</th>
+                            <th class="bg-primary text-white">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="fs-5">
+                        {% for course in courses %}
+                        <tr>
+                            <td>{{course.course_code}}</td>
+                            <td>{{course.course_title}}</td>
+                            <td>{{course.category_course}}</td>
+                            <td>{{course.course_type}}</td>
+                            <td>{{course.course_level}}</td>
+                            <td>{{course.course_duration}}</td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <!-- VIEW Button -->
+                                    <button class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#viewModal{{course.course_id}}">
+                                         VIEW
+                                    </button>
+
+                                    <!-- EDIT Button - Green -->
+                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal{{course.course_id}}">
+                                         EDIT
+                                    </button>
+
+                                    <!-- DELETE Button - Danger Red -->
+                                    <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{course.course_id}}">
+                                         DELETE
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Footer -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <span class="text-primary">Showing 1 to {{ courses.count }} of {{ courses.count }} entries</span>
+                <nav aria-label="Page navigation example">
+                  <ul class="pagination">
+                    <li class="page-item">
+                      <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                      </a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">4</a></li>
+                    <li class="page-item">
+                      <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                      </a>
+                    </li>
+                  </ul>
+                </nav>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="text-primary">Rows per page:</span>
+                    <select class="form-select form-select-sm w-auto border-primary">
+                        <option>10</option>
+                        <option>25</option>
+                        <option>50</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ADD MODAL -->
+<div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white sticky-top">
+                <h5 class="modal-title">ADD NEW COURSE</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <form method="POST" action="{% url 'add_courses' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <!-- Basic Information -->
+                    <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-book"></i> Basic Information</h5>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Model Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="model_name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Course Code <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="course_code" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-primary">Course Title <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="course_title" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-primary">Course Image</label>
+                        <input type="file" class="form-control" name="image" accept="image/*">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-primary">Short Description <span class="text-danger">*</span></label>
+                        <textarea class="form-control" name="course_short_description" rows="2" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-primary">Detailed Description</label>
+                        <textarea class="form-control" name="course_detailed_description" rows="3"></textarea>
+                    </div>
+
+                    <!-- Category Information -->
+                    <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-tags"></i> Category Information</h5>
+
+<!--                    <div class="row mb-3">-->
+<!--                        <div class="col-md-6">-->
+<!--                            <label class="form-label fw-bold text-primary">Course Category <span class="text-danger">*</span></label>-->
+<!--                            <input type="text" class="form-control" name="course_category" required>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-6">-->
+<!--                            <label class="form-label fw-bold text-primary">Course Sub Category</label>-->
+<!--                            <input type="text" class="form-control" name="course_sub_category">-->
+<!--                        </div>-->
+<!--                    </div>-->
+                   <div class="row mb-3">
+<div class="col-md-6">
+<label class="form-label fw-bold text-primary">Category *</label>
+
+<select name="category_course" id="add_category_course"
+class="form-control"
+onchange="filterSubCategories(this.value,'add_sub_category')">
+
+<option value="">Select Category</option>
+
+{% for cat in categories_courses %}
+<option value="{{ cat.id }}">{{ cat.course_category }}</option>
+{% endfor %}
+
+</select>
+</div>
+
+<div class="col-md-6">
+<label class="form-label fw-bold text-primary">Sub Category</label>
+
+<select name="sub_category_course" id="add_sub_category"
+class="form-control">
+
+<option value="">Select Sub Category</option>
+
+{% for sub in sub_categories_courses %}
+<option value="{{ sub.id }}"
+data-category="{{ sub.category_course.id }}">
+
+{{ sub.course_sub_category }}
+
+</option>
+{% endfor %}
+
+</select>
+
+</div>
+</div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Course Type <span class="text-danger">*</span></label>
+                            <select class="form-select" name="course_type" required>
+                                <option value="">Select Type</option>
+                                <option value="Academic">Academic</option>
+                                <option value="Professional">Professional</option>
+                                <option value="Certification">Certification</option>
+                                <option value="Skill">Skill</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Course Level <span class="text-danger">*</span></label>
+                            <select class="form-select" name="course_level" required>
+                                <option value="">Select Level</option>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-primary">Course Duration <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="course_duration" placeholder="e.g., 6 weeks, 3 months" required>
+                    </div>
+
+                    <!-- Module & Lesson Information -->
+                    <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-collection"></i> Module & Lesson Information</h5>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Number of Modules</label>
+                            <input type="number" class="form-control" name="number_of_modules">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Number of Lessons</label>
+                            <input type="number" class="form-control" name="number_of_lessons">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Module Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="module_title" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Lesson Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="lesson_title" required>
+                        </div>
+                    </div>
+
+                    <!-- Content Information -->
+                    <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-play-circle"></i> Content Information</h5>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Content Type <span class="text-danger">*</span></label>
+                            <select class="form-select" name="content_type" required>
+                                <option value="">Select Type</option>
+                                <option value="Video">Video</option>
+                                <option value="PDF">PDF</option>
+                                <option value="PPT">PPT</option>
+                                <option value="Audio">Audio</option>
+                                <option value="SCORM">SCORM</option>
+                                <option value="Live Session">Live Session</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Preview Enabled</label>
+                            <select class="form-select" name="preview_enabled">
+                                <option value="False">No</option>
+                                <option value="True">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-primary">Content File</label>
+                        <input type="file" class="form-control" name="content_url_upload">
+                    </div>
+
+                    <!-- Enrollment Settings -->
+                    <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-person-plus"></i> Enrollment Settings</h5>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Enrollment Type <span class="text-danger">*</span></label>
+                            <select class="form-select" name="enrollment_type" required>
+                                <option value="">Select Type</option>
+                                <option value="Free">Free</option>
+                                <option value="Paid">Paid</option>
+                                <option value="Restricted">Restricted</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Access Duration <span class="text-danger">*</span></label>
+                            <select class="form-select" name="access_duration" required>
+                                <option value="">Select Duration</option>
+                                <option value="Lifetime">Lifetime</option>
+                                <option value="Fixed Period">Fixed Period</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Start Date</label>
+                            <input type="date" class="form-control" name="enrollment_start_date">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">End Date</label>
+                            <input type="date" class="form-control" name="enrollment_end_date">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-primary">Prerequisite Courses</label>
+                        <input type="text" class="form-control" name="prerequisite_courses" placeholder="Enter course codes separated by commas">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-primary">User Roles Allowed <span class="text-danger">*</span></label>
+                        <select class="form-select" name="user_roles_allowed" required>
+                            <option value="">Select Role</option>
+                            <option value="Student">Student</option>
+                            <option value="Employee">Employee</option>
+                            <option value="Partner">Partner</option>
+                        </select>
+                    </div>
+
+                    <!-- Pricing Information -->
+                    <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-currency-rupee"></i> Pricing Information</h5>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Course Price</label>
+                            <input type="number" step="0.01" class="form-control" name="course_price">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Discount</label>
+                            <input type="text" class="form-control" name="discount_type_value" placeholder="e.g., 10% off">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-primary">Tax Applicable</label>
+                        <select class="form-select" name="tax_applicable">
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+
+                    <!-- Certification Information -->
+                    <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-award"></i> Certification</h5>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Certificate Available</label>
+                            <select class="form-select" name="certificate_available">
+                                <option value="0">No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Min Completion %</label>
+                            <input type="number" step="0.01" class="form-control" name="minimum_completion_percentage">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-primary">Certificate Template</label>
+                        <input type="file" class="form-control" name="certificate_template">
+                    </div>
+
+                    <div class="text-center border-top pt-3 mt-3">
+                        <button type="submit" class="btn btn-primary px-4">SAVE COURSE</button>
+                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">CANCEL</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light sticky-bottom">
+                <span class="text-primary fw-bold"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic Modals for each course -->
+{% for course in courses %}
+<!-- VIEW MODAL {{ course.course_id }} -->
+<div class="modal fade" id="viewModal{{ course.course_id }}" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white sticky-top">
+                <h5 class="modal-title">Course Information</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <!-- Course Wrapper -->
+                <div class="border rounded bg-white overflow-hidden shadow-sm">
+
+                    <!-- Course Header -->
+                    <div class="bg-primary text-white text-center p-3 fw-bold fs-5">
+                        Course Basic Information
+                    </div>
+
+                    <!-- Course ID & Code -->
+                    <div class="d-flex border-bottom mx-0">
+                         <div class="d-flex border-bottom">
+                        <div class="bg-light p-3 fw-bold text-dark" style="width:230px;">Course ID:</div>
+                        <div class="p-3 flex-grow-1">{{ course.course_id }}</div>
+                    </div>
+                         <div class="d-flex border-bottom">
+                        <div class="bg-light p-3 fw-bold text-dark" style="width:230px;">Course Code:</div>
+                        <div class="p-3 flex-grow-1">{{ course.course_code }}</div>
+                    </div>
+                    </div>
+                    <!-- Title & Short Description -->
+                    <div class="border-bottom">
+
+                        <div class="d-flex border-bottom">
+                        <div class="bg-primary p-3 fw-bold text-dark" style="width:230px;">Course Title:</div>
+                        <div class="p-3 flex-grow-1">{{ course.model_name }}</div>
+                    </div>
+                        </div>
+                        <div class="d-flex border-bottom">
+                            <div class="bg-primary p-3 fw-bold text-dark" style="width:230px;">Course Short Description:</div>
+                            <div class="p-3 flex-grow-1">{{ course.course_short_description }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Description -->
+                    <div class="d-flex border-bottom">
+                        <div class="bg-primary p-3 fw-bold text-dark" style="width:230px;">Course Detailed Description</div>
+                        <div class="p-3 flex-grow-1">{{ course.course_detailed_description }}</div>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="border-bottom">
+                        <div class="d-flex border-bottom">
+                            <div class="bg-primary p-3 fw-bold text-dark" style="width:230px;">Course Category</div>
+                            <div class="p-3 flex-grow-1">{{ course.category_course }}</div>
+                        </div>
+                        <div class="d-flex border-bottom">
+                            <div class="bg-primary p-3 fw-bold text-dark" style="width:230px;">Course Sub-Category</div>
+                            <div class="p-3 flex-grow-1">{{ course.sub_category_course }}</div>
+                        </div>
+                        <div class="d-flex border-bottom">
+                            <div class="bg-primary p-3 fw-bold text-dark" style="width:230px;">Course Type</div>
+                            <div class="p-3 flex-grow-1">{{ course.course_type }}</div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="bg-primary p-3 fw-bold text-dark" style="width:230px;">Course Level</div>
+                            <div class="p-3 flex-grow-1">{{ course.course_level }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Module Summary -->
+                    <div class="border-bottom">
+                        <div class="d-flex border-bottom">
+                            <div class="bg-primary p-3 fw-bold text-dark" style="width:230px;">Module Title:</div>
+                            <div class="p-3" style="width:230px;">{{ course.module_title }}</div>
+                            <div class="bg-primary p-3 fw-bold text-dark" style="width:230px;">Lesson Title:</div>
+                            <div class="p-3 flex-grow-1">{{ course.lesson_title }}</div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="bg-primary p-3 fw-bold text-dark" style="width:230px;">Number of Modules:</div>
+                            <div class="p-3" style="width:230px;">{{ course.number_of_modules }}</div>
+                            <div class="bg-primary p-3 fw-bold text-dark" style="width:230px;">Number of Lessons:</div>
+                            <div class="p-3 flex-grow-1">{{ course.number_of_lessons }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Module Content -->
+                    <div class="border-bottom">
+                        <div class="d-flex border-bottom">
+                            <div class="p-3 fw-bold text-dark bg-primary" style="width:230px;">Module Title:</div>
+                            <div class="p-3 flex-grow-1">{{ course.module_title }}</div>
+                        </div>
+                        <div class="d-flex border-bottom">
+                            <div class="p-3 fw-bold text-dark bg-primary" style="width:230px;">Content Type:</div>
+                            <div class="p-3 flex-grow-1">{{ course.content_type }}</div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="p-3 fw-bold text-dark bg-primary" style="width:230px;">Content URL / Upload</div>
+                            <div class="p-3 flex-grow-1">{{ course.content_url_upload }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Enrollment Grid -->
+                    <div class="row g-0">
+                        <div class="col-6 p-3 border-bottom border-end">
+                            <strong class="text-primary">Preview Enabled:</strong> {{ course.preview_enabled }}
+                        </div>
+                        <div class="col-6 p-3 border-bottom">
+                            <strong class="text-primary">Enrollment Type:</strong> {{ course.enrollment_type }}
+                        </div>
+
+                        <div class="col-6 p-3 border-bottom border-end">
+                            <strong class="text-primary">Enrollment Start Date:</strong> {{ course.enrollment_start_date }}
+                        </div>
+                        <div class="col-6 p-3 border-bottom">
+                            <strong class="text-primary">Enrollment End Date:</strong> {{ course.enrollment_end_date }}
+                        </div>
+
+                        <div class="col-6 p-3 border-bottom border-end">
+                            <strong class="text-primary">Maximum Enrollments:</strong> {{ course.max_enrollments }}
+                        </div>
+                        <div class="col-6 p-3 border-bottom">
+                            <strong class="text-primary">Access Duration:</strong> {{ course.access_duration }}
+                        </div>
+
+                        <div class="col-6 p-3 border-bottom border-end">
+                            <strong class="text-primary">Prerequisite Courses:</strong> {{ course.prerequisite_courses }}
+                        </div>
+                        <div class="col-6 p-3 border-bottom">
+                            <strong class="text-primary">User Roles Allowed:</strong> {{ course.user_roles_allowed }}
+                        </div>
+
+                        <div class="col-6 p-3 border-bottom border-end">
+                            <strong class="text-primary">Course Price:</strong> {{ course.course_price }}
+                        </div>
+                        <div class="col-6 p-3 border-bottom">
+                            <strong class="text-primary">Tax Applicable:</strong> {{ course.tax_applicable }}
+                        </div>
+
+                        <div class="col-6 p-3 border-end">
+                            <strong class="text-primary">Discount Type/Value:</strong> {{ course.discount_type_value }}
+                        </div>
+                        <div class="col-6 p-3">
+                            <strong class="text-primary">Certificate Available:</strong> {{ course.certificate_available }}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer bg-light sticky-bottom">
+                <span class="text-primary fw-bold"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT MODAL {{ course.course_id }} -->
+<div class="modal fade" id="editModal{{ course.course_id }}" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white sticky-top">
+                <h5 class="modal-title">EDIT COURSE</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <form method="POST" action="/edit_course/{{ course.course_id }}/" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="course_id" value="{{ course.course_id }}">
+
+                    <h5 class="text-primary border-bottom pb-2 mb-3">Basic Information</h5>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Course Code *</label>
+                            <input type="text" class="form-control" name="course_code" value="{{ course.course_code }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Model Name *</label>
+                            <input type="text" class="form-control" name="model_name" value="{{ course.model_name }}" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-primary">Course Title *</label>
+                        <input type="text" class="form-control" name="course_title" value="{{ course.course_title }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-primary">Short Description *</label>
+                        <textarea class="form-control" name="course_short_description" rows="2" required>{{ course.course_short_description }}</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-primary">Detailed Description</label>
+                        <textarea class="form-control" name="course_detailed_description" rows="4">{{ course.course_detailed_description }}</textarea>
+                    </div>
+
+<!--                    <div class="row mb-3">-->
+<!--                        <div class="col-md-6">-->
+<!--                            <label class="form-label fw-bold text-primary">Category *</label>-->
+<!--                            <input type="text" class="form-control" name="course_category" value="{{ course.course_category }}" required>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-6">-->
+<!--                            <label class="form-label fw-bold text-primary">Sub Category</label>-->
+<!--                            <input type="text" class="form-control" name="course_sub_category" value="{{ course.course_sub_category }}">-->
+<!--                        </div>-->
+<!--                    </div>-->
+                   <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Category *</label>
+<!--                            <input type="text" class="form-control" name="course_category" value="{{course.course_category}}" required>-->
+                           <select name="category_course"
+id="edit_category_course_{{course.course_id}}"
+class="form-control"
+onchange="filterSubCategories(this.value,'edit_sub_category_course_{{course.course_id}}')">
+
+<option value="">Select Course Category</option>
+
+{% for cat in categories_courses %}
+<option value="{{ cat.id }}"
+{% if course.category_course.id == cat.id %}selected{% endif %}>
+{{ cat.course_category }}
+</option>
+{% endfor %}
+
+</select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Sub Category</label>
+<!--                            <input type="text" class="form-control" name="course_sub_category" value="{{course.course_sub_category}}">-->
+                            <select name="sub_category_course"
+id="edit_sub_category_course_{{course.course_id}}"
+class="form-control">
+
+<option value="">Select Course Sub Category</option>
+
+{% for sub in sub_categories_courses %}
+<option value="{{ sub.id }}"
+data-category="{{ sub.category_course.id }}"
+{% if course.sub_category_course.id == sub.id %}selected{% endif %}>
+{{ sub.course_sub_category }}
+</option>
+{% endfor %}
+
+</select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Course Type *</label>
+                            <select class="form-select" name="course_type" required>
+                                <option value="">Select Type</option>
+                                <option value="Academic" {% if course.course_type == 'Academic' %}selected{% endif %}>Academic</option>
+                                <option value="Professional" {% if course.course_type == 'Professional' %}selected{% endif %}>Professional</option>
+                                <option value="Certification" {% if course.course_type == 'Certification' %}selected{% endif %}>Certification</option>
+                                <option value="Skill" {% if course.course_type == 'Skill' %}selected{% endif %}>Skill</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Course Level *</label>
+                            <select class="form-select" name="course_level" required>
+                                <option value="">Select Level</option>
+                                <option value="Beginner" {% if course.course_level == 'Beginner' %}selected{% endif %}>Beginner</option>
+                                <option value="Intermediate" {% if course.course_level == 'Intermediate' %}selected{% endif %}>Intermediate</option>
+                                <option value="Advanced" {% if course.course_level == 'Advanced' %}selected{% endif %}>Advanced</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-primary">Course Duration *</label>
+                        <input type="text" class="form-control" name="course_duration" value="{{ course.course_duration }}" placeholder="e.g., 6 weeks, 3 months" required>
+                    </div>
+
+                    <h5 class="text-primary border-bottom pb-2 mb-3">Module & Lesson Information</h5>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Number of Modules</label>
+                            <input type="number" class="form-control" name="number_of_modules" value="{{ course.number_of_modules }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Number of Lessons</label>
+                            <input type="number" class="form-control" name="number_of_lessons" value="{{ course.number_of_lessons }}">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Module Title</label>
+                            <input type="text" class="form-control" name="module_title" value="{{ course.module_title }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Lesson Title</label>
+                            <input type="text" class="form-control" name="lesson_title" value="{{ course.lesson_title }}">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Content Type *</label>
+                            <select class="form-select" name="content_type" required>
+                                <option value="">Select Content Type</option>
+                                <option value="Video" {% if course.content_type == 'Video' %}selected{% endif %}>Video</option>
+                                <option value="PDF" {% if course.content_type == 'PDF' %}selected{% endif %}>PDF</option>
+                                <option value="PPT" {% if course.content_type == 'PPT' %}selected{% endif %}>PPT</option>
+                                <option value="Audio" {% if course.content_type == 'Audio' %}selected{% endif %}>Audio</option>
+                                <option value="SCORM" {% if course.content_type == 'SCORM' %}selected{% endif %}>SCORM</option>
+                                <option value="Live Session" {% if course.content_type == 'Live Session' %}selected{% endif %}>Live Session</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Preview Enabled</label>
+                            <select class="form-select" name="preview_enabled">
+                                <option value="False" {% if not course.preview_enabled %}selected{% endif %}>No</option>
+                                <option value="True" {% if course.preview_enabled %}selected{% endif %}>Yes</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-primary">Content File</label>
+                        <input type="file" class="form-control" name="content_url_upload" accept=".pdf,.ppt,.pptx,.mp4,.mp3,.zip">
+                        {% if course.content_url_upload %}
+                        <div class="mt-2 p-2 border bg-light">
+                            <p class="mb-2 fw-bold">Current Content: <span class="text-muted">{{ course.content_url_upload.name|slice:"20:" }}</span></p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <h5 class="text-primary border-bottom pb-2 mb-3">Enrollment Settings</h5>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Enrollment Type *</label>
+                            <select class="form-select" name="enrollment_type" required>
+                                <option value="">Select Type</option>
+                                <option value="Free" {% if course.enrollment_type == 'Free' %}selected{% endif %}>Free</option>
+                                <option value="Paid" {% if course.enrollment_type == 'Paid' %}selected{% endif %}>Paid</option>
+                                <option value="Restricted" {% if course.enrollment_type == 'Restricted' %}selected{% endif %}>Restricted</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Access Duration *</label>
+                            <select class="form-select" name="access_duration" required>
+                                <option value="">Select Duration</option>
+                                <option value="Lifetime" {% if course.access_duration == 'Lifetime' %}selected{% endif %}>Lifetime</option>
+                                <option value="Fixed Period" {% if course.access_duration == 'Fixed Period' %}selected{% endif %}>Fixed Period</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Enrollment Start Date</label>
+                            <input type="date" class="form-control" name="enrollment_start_date" value="{{ course.enrollment_start_date|date:'Y-m-d' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Enrollment End Date</label>
+                            <input type="date" class="form-control" name="enrollment_end_date" value="{{ course.enrollment_end_date|date:'Y-m-d' }}">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Prerequisite Courses</label>
+                            <input type="text" class="form-control" name="prerequisite_courses" value="{{ course.prerequisite_courses }}" placeholder="Comma separated course codes">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">User Roles Allowed *</label>
+                            <select class="form-select" name="user_roles_allowed" required>
+                                <option value="">Select Role</option>
+                                <option value="Student" {% if course.user_roles_allowed == 'Student' %}selected{% endif %}>Student</option>
+                                <option value="Employee" {% if course.user_roles_allowed == 'Employee' %}selected{% endif %}>Employee</option>
+                                <option value="Partner" {% if course.user_roles_allowed == 'Partner' %}selected{% endif %}>Partner</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h5 class="text-primary border-bottom pb-2 mb-3">Pricing</h5>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Course Price</label>
+                            <input type="number" step="0.01" class="form-control" name="course_price" value="{{ course.course_price }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Discount Type/Value</label>
+                            <input type="text" class="form-control" name="discount_type_value" value="{{ course.discount_type_value }}" placeholder="e.g., 10% off">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-primary">Tax Applicable</label>
+                        <select class="form-select" name="tax_applicable">
+                            <option value="False" {% if not course.tax_applicable %}selected{% endif %}>No</option>
+                            <option value="True" {% if course.tax_applicable %}selected{% endif %}>Yes</option>
+                        </select>
+                    </div>
+
+                    <h5 class="text-primary border-bottom pb-2 mb-3">Certification</h5>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Certificate Available</label>
+                            <select class="form-select" name="certificate_available">
+                                <option value="False" {% if not course.certificate_available %}selected{% endif %}>No</option>
+                                <option value="True" {% if course.certificate_available %}selected{% endif %}>Yes</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Min Completion %</label>
+                            <input type="number" step="0.01" class="form-control" name="minimum_completion_percentage" value="{{ course.minimum_completion_percentage }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-primary">Certificate Template</label>
+                        <input type="file" class="form-control" name="certificate_template" accept=".pdf,.doc,.docx">
+                        {% if course.certificate_template %}
+                        <div class="mt-2 p-2 border bg-light">
+                            <p class="mb-2 fw-bold">Current Template: <span class="text-muted">{{ course.certificate_template.name|slice:"20:" }}</span></p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-primary">Course Image</label>
+                        <input type="file" class="form-control" name="image" accept="image/*">
+                        {% if course.image %}
+                        <div class="mt-2 p-2 border bg-light">
+                            <p class="mb-2 fw-bold">Current Image:</p>
+                            <img src="{{ course.image.url }}" class="img-thumbnail" style="max-width: 200px;">
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="text-center border-top pt-3">
+                        <button type="submit" class="btn btn-primary px-4">SAVE CHANGES</button>
+                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">CANCEL</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light sticky-bottom">
+                <span class="text-primary fw-bold"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DELETE MODAL {{ course.course_id }} -->
+<div class="modal fade" id="deleteModal{{ course.course_id }}" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white sticky-top">
+                <h5 class="modal-title">DELETE COURSE</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    Are you sure you want to permanently delete this course?
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-body d-flex gap-3">
+                        <img src="{% if course.image %}{{ course.image.url }}{% else %}/static/default-course.jpg{% endif %}" class="img-thumbnail" alt="Course" style="width: 80px; height: 80px; object-fit: cover;">
+                        <div>
+                            <h6 class="fw-bold mb-2">{{ course.course_title }}</h6>
+                            <p class="mb-1 text-muted">{{ course.category_course  }}</p>
+                            <p class="mb-0 text-muted">{{ course.course_code }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="POST" action="/delete_course/{{ course.course_id }}/">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-center gap-3">
+                        <button type="submit" class="btn btn-danger px-4">DELETE</button>
+                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">CANCEL</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light sticky-bottom">
+                <span class="text-primary fw-bold"></span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+<script>
+
+// CATEGORY → SUB CATEGORY FILTER
+function filterSubCategories(categoryId, targetSelectId) {
+
+const targetSelect = document.getElementById(targetSelectId);
+if (!targetSelect) return;
+
+const options = targetSelect.querySelectorAll('option');
+
+options.forEach(opt => {
+
+if (opt.value === "") {
+opt.style.display = "block";
+} else {
+opt.style.display = "none";
+}
+
+});
+
+if (categoryId) {
+
+options.forEach(opt => {
+
+if (opt.dataset.category == categoryId) {
+opt.style.display = "block";
+}
+
+});
+
+} else {
+
+options.forEach(opt => opt.style.display = "block");
+
+}
+
+}
+
+// INITIALIZE FILTERS WHEN PAGE LOADS
+document.addEventListener("DOMContentLoaded", function () {
+
+    // ADD MODAL → CATEGORY FILTER
+    const addCategory = document.getElementById("add_category_course");
+    if (addCategory) {
+        filterSubCategories(addCategory.value, "add_sub_category");
+    }
+
+
+
+
+    // EDIT MODALS
+    // EDIT MODALS
+{% for course in courses %}
+
+const editCategoryCourse{{course.course_id}} =
+document.getElementById("edit_category_course_{{course.course_id}}");
+
+if (editCategoryCourse{{course.course_id}}) {
+
+filterSubCategories(
+editCategoryCourse{{course.course_id}}.value,
+"edit_sub_category_course_{{course.course_id}}"
+);
+
+}
+
+{% endfor %}
+
+});
+
+</script>
+
+<!-- Bootstrap JS Bundle (required for modal functionality) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+{% endblock %}

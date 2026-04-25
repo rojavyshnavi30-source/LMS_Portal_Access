@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+<!--doctors complete list-->
+{% block content %}
+ {% if courses %}
+<div class="mb-3">
+            <a href="{% url 'course_list' %}" class="btn btn-primary">VIEW ALL COURSES</a>
+        </div>
+<div class="container">
+    <div class="row">
+   {% for course1 in courses %}
+    <div class="col-md-3">
+      <div class="card" style="width: 18rem;">
+           <a href="{% url 'course_detail' course1.pk %}">
+               <img src="{{ course1.image.url }}" class="card-img-top" alt="...">
+           </a>
+        <div class="card-body">
+           <h5 class="card-title">{{course1.model_name}}</h5>
+            <p class="card-title">{{course1.course_id }}</p>
+            <p class="card-title">{{course1.course_title}}</p>
+            <p class="card-title">{{course1.course_short_description}}</p>
+           <a href="{% url 'course_detail' course1.pk %}" class="btn btn-primary">Go somewhere</a>
+             <a href="{% url 'update' course1.pk %}"> <button type="button" class="btn btn-primary">Update</button></a>
+            <a href="{% url 'delete' course1.pk %}"> <button type="button" class="btn btn-danger">Delete</button></a>
+        </div>
+      </div>
+    </div>
+{% endfor %}
+    </div>
+    </div>
+<!-- Centered Pagination -->
+<div class="row m-5">
+    <div class="col-md-12">
+        {% if courses.has_other_pages %}
+            <ul class="pagination justify-content-center">
+                <!-- Previous Button - FIXED -->
+                {% if courses.has_previous %}
+                    <li class="page-item">
+                        <a href="?page={{ courses.previous_page_number }}" class="page-link">Previous</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
+                    </li>
+                {% endif %}
+
+                <!-- Page Numbers -->
+                {% for i in courses.paginator.page_range %}
+                    {% if courses.number == i %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ i }}</span>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                <!-- Next Button -->
+                {% if courses.has_next %}
+                    <li class="page-item">
+                        <a href="?page={{ courses.next_page_number }}" class="page-link">Next</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Next</span>
+                    </li>
+                {% endif %}
+            </ul>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+<p style="color:blue"><b>...No details found...</b></p>
+{% endif %}
+{% endblock %}

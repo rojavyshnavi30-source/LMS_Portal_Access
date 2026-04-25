@@ -1,0 +1,237 @@
+ {% extends 'base.html' %}
+{% block content %}
+
+<style>
+    body {
+    background: #f4f7fb;
+    font-family: Arial, sans-serif;
+}
+
+.course-wrapper {
+    max-width: 1100px;
+    margin: 30px auto;
+    background: #fff;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Header */
+.course-header {
+    background: #0d6efd;
+    color: #fff;
+    text-align: center;
+    padding: 16px;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+/* Common Box */
+.box {
+    border: 1px solid #d9e2ef;
+    margin: 14px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.row-flex {
+    display: flex;
+}
+
+/* Left blue labels */
+.label {
+    background: #0d6efd;
+    color: #fff;
+    padding: 12px;
+    min-width: 230px;
+    font-weight: bold;
+}
+
+
+/* Right content */
+.value {
+    background: #fff;
+    padding: 12px;
+    flex: 1;
+    color: #000;
+}
+.label-a {
+    {#background: linear-gradient(to right, #0a5aa3, #0d6efd);#}
+    color: blue;
+    padding: 12px;
+    min-width: 230px;
+    font-weight: bold;
+}
+
+
+/* Right content */
+.value-a {
+    background: #fff;
+    padding: 12px;
+    flex: 1;
+    color: #000;
+}
+
+/* Small blue tag (not full width) */
+.blue-tag {
+    display: inline-block;
+    background: #0d6efd;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+/* Dividers */
+.v-divider {
+    width: 1px;
+    background: #cfd9e8;
+}
+
+.h-divider {
+    height: 1px;
+    background: #cfd9e8;
+}
+
+/* Info grid */
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.info-row {
+    border-bottom: 1px solid #e1e8f0;
+}
+
+.info-row:nth-child(even) {
+    border-left: 1px solid #cfd9e8;
+}
+
+.right-cell {
+    border-left: 1px solid #cfd9e8;
+}
+</style>
+
+<div class="course-wrapper">
+
+    <div class="course-header">Course Basic Information</div>
+
+    <!-- Course ID & Code -->
+    <div class="box row-flex">
+        <div class="value"><strong style="color:blue;">Course ID:</strong> {{ course.course_id }}</div>
+        <div class="v-divider"></div>
+        <div class="value"><strong style="color:blue;">Course Code:</strong> {{ course.course_code }}</div>
+    </div>
+
+    <!-- Title & Short Description -->
+    <div class="box">
+        <div class="value"><strong style="color:blue;">Course Title:</strong> {{ course.model_name }}</div>
+        <div class="h-divider"></div>
+        <div class="value">
+            <strong style="color:blue;">Course Short Description:</strong>
+            {{ course.course_short_description }}
+        </div>
+    </div>
+
+    <!-- Detailed Description -->
+    <div class="box row-flex">
+        <div class="label">Course Detailed Description</div>
+        <div class="value">
+            {{ course.course_detailed_description }}
+        </div>
+    </div>
+
+    <!-- Category -->
+    <div class="box">
+        <div class="row-flex"><div class="label">Course Category</div><div class="value">{{ course.course_category }}</div></div>
+        <div class="h-divider"></div>
+        <div class="row-flex"><div class="label">Course Sub-Category</div><div class="value">{{ course.course_sub_category }}</div></div>
+        <div class="h-divider"></div>
+        <div class="row-flex"><div class="label">Course Type</div><div class="value">{{ course.course_type }}</div></div>
+        <div class="h-divider"></div>
+        <div class="row-flex"><div class="label">Course Level</div><div class="value">{{ course.course_level }}</div></div>
+    </div>
+
+    <!-- Module Summary -->
+    <!-- Module Summary -->
+<div class="box">
+
+    <!-- Row 1 -->
+    <div class="row-flex">
+        <div class="label">Module Title:</div>
+        <div class="value">{{ course.module_title }}</div>
+
+        <div class="label">Lesson Title:</div>
+        <div class="value">{{ course.lesson_title }}</div>
+    </div>
+
+    <div class="h-divider"></div>
+
+    <!-- Row 2 -->
+    <div class="row-flex">
+        <div class="label">Number of Modules:</div>
+        <div class="value">{{ course.number_of_modules }}</div>
+
+        <div class="label">Number of Lessons:</div>
+        <div class="value">{{ course.number_of_lessons }}</div>
+    </div>
+
+</div>
+
+
+    <!-- Module Content -->
+    <!-- Module Content -->
+<div class="box">
+
+    <div class="row-flex">
+        <div class="label">Module Title:</div>
+        <div class="value">{{ course.module_title }}</div>
+    </div>
+
+    <div class="h-divider"></div>
+
+    <div class="row-flex">
+        <div class="label-a">Content Type:</div>
+        <div class="value-a" style="margin-left: -110px;">{{ course.content_type }}</div>
+    </div>
+
+    <div class="h-divider"></div>
+
+    <div class="row-flex">
+        <div class="label-a">Content URL / Upload</div>
+        <div class="value-a">{{ course.content_url_upload }}</div>
+        <div class="label">Content URL / Upload:</div>
+        <div class="value">{{ course.content_url_upload }}</div>
+    </div>
+
+</div>
+
+
+    <!-- Enrollment -->
+    <div class="box info-grid">
+        <div class="info-row"><div class="value"><strong style="color:blue;">Preview Enabled:</strong> {{ course.preview_enabled }}</div></div>
+        <div class="info-row"><div class="value"><strong style="color:blue;">Enrollment Type:</strong> {{ course.enrollment_type }}</div></div>
+
+        <div class="info-row"><div class="value"><strong style="color:blue;">Enrollment Start Date:</strong> {{ course.enrollment_start_date }}</div></div>
+        <div class="info-row"><div class="value"><strong style="color:blue;">Enrollment End Date:</strong> {{ course.enrollment_end_date }}</div></div>
+
+        <div class="info-row"><div class="value"><strong style="color:blue;">Maximum Enrollments:</strong> {{ course.max_enrollments }}</div></div>
+        <div class="info-row"><div class="value"><strong style="color:blue;">Access Duration:</strong> {{ course.access_duration }}</div></div>
+
+        <div class="info-row"><div class="value"><strong style="color:blue;">Prerequisite Courses:</strong> {{ course.prerequisites }}</div></div>
+        <div class="info-row"><div class="value"><strong style="color:blue;">Prerequisite Courses:</strong> {{ course.prerequisites }}</div></div>
+
+        <div class="info-row"><div class="value"><strong style="color:blue;">User Roles Allowed:</strong> {{ course.user_roles_allowed }}</div></div>
+        <div class="info-row"><div class="value"><strong style="color:blue;">Course Price:</strong> {{ course.course_price }}</div></div>
+
+        <div class="info-row"><div class="value"><strong style="color:blue;">Tax Applicable:</strong> {{ course.tax_applicable }}</div></div>
+        <div class="info-row"><div class="value"><strong style="color:blue;">Discount Type/Value:</strong>{{ course.discount_type }}</div></div>
+
+        <div class="info-row"><div class="value"><strong style="color:blue;">Certificate Available:</strong> {{ course.certificate_available }}</div></div>
+        <div class="info-row"><div class="value"><strong style="color:blue;">Tax Applicable:</strong> {{ course.tax_applicable }}</div></div>
+
+    </div>
+
+</div>
+
+{% endblock %}

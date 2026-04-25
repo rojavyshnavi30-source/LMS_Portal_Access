@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>DELETE DOCTOR INFO</h2>
+<div class="container">
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{form}}
+        <input type="submit" name="submit">
+    </form>
+</div>
+{% endblock %}
