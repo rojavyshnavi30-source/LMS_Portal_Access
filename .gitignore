@@ -116,6 +116,7 @@ __pycache__/
 # Ignore any local environment folder
 .env
 .env.*
+!.env.example
 
 # Ignore built static files
 staticfiles/
